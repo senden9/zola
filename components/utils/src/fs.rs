@@ -3,6 +3,7 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 use walkdir::WalkDir;
+use html_minifier::minify;
 
 use errors::{Error, Result};
 
@@ -21,7 +22,13 @@ pub fn is_path_in_directory(parent: &Path, path: &Path) -> Result<bool> {
 pub fn create_file(path: &Path, content: &str) -> Result<()> {
     let mut file =
         File::create(&path).map_err(|e| Error::chain(format!("Failed to create {:?}", path), e))?;
-    file.write_all(content.as_bytes())?;
+    let is_html_file = path.extension().map_or(false, |v| { v == "html" });
+    if is_html_file {
+        let shrinked = minify(content)?;
+        file.write_all(shrinked.as_bytes())?;
+    } else {
+        file.write_all(content.as_bytes())?;
+    }
     Ok(())
 }
 
