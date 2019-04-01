@@ -73,6 +73,11 @@ build_search_index = false
 # only enabled once in a while to catch any dead links.
 check_external_links = false
 
+# Whether to minimize the resulting HTML files.
+# Removing unused multiple whitespaces, comments, and so on.
+# See https://docs.rs/html-minifier/1.1.4/html_minifier/#html-minifier for a full list of minifications.
+minimize_html = false
+
 # A list of glob patterns specifying asset files to ignore when
 # processing the content directory.
 # Defaults to none, which means all asset files are copied over to the public folder.

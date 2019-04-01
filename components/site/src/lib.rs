@@ -1021,11 +1021,11 @@ impl Site {
             .collect::<Result<()>>()
     }
 
+    /// Minimize the HTML files by removing unused multiple whitespaces, comments etc.
     pub fn minimize_html(&self) -> Result<()> {
         let output_path = self.output_path.to_string_lossy().replace("\\", "/");
         let glob_pattern = format!("{}/**/*.html", output_path);
         for html_path in glob(&glob_pattern).expect("Invalid glob").filter_map(|e| e.ok()) {
-            println!("{:#?}", &html_path);
             let content: String = std::fs::read_to_string(&html_path)?;
             let shrinked: String = minify(content)?;
             create_file(&html_path, &shrinked)?;
