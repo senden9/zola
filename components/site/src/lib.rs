@@ -4,6 +4,7 @@ extern crate serde;
 extern crate tera;
 #[macro_use]
 extern crate serde_derive;
+extern crate html_minifier;
 extern crate sass_rs;
 
 #[macro_use]
@@ -19,15 +20,15 @@ extern crate utils;
 #[cfg(test)]
 extern crate tempfile;
 
-
 mod sitemap;
 
-use std::collections::{HashMap};
+use std::collections::HashMap;
 use std::fs::{copy, create_dir_all, remove_dir_all};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, RwLock};
 
 use glob::glob;
+use html_minifier::minify;
 use rayon::prelude::*;
 use sass_rs::{compile_file, Options as SassOptions, OutputStyle};
 use tera::{Context, Tera};
@@ -578,6 +579,10 @@ impl Site {
         self.render_robots()?;
         self.render_taxonomies()?;
 
+        if self.config.minimize_html {
+            self.minimize_html()?;
+        }
+
         Ok(())
     }
 
@@ -1014,5 +1019,17 @@ impl Site {
                 Ok(())
             })
             .collect::<Result<()>>()
+    }
+
+    pub fn minimize_html(&self) -> Result<()> {
+        let output_path = self.output_path.to_string_lossy().replace("\\", "/");
+        let glob_pattern = format!("{}/**/*.html", output_path);
+        for html_path in glob(&glob_pattern).expect("Invalid glob").filter_map(|e| e.ok()) {
+            println!("{:#?}", &html_path);
+            let content: String = std::fs::read_to_string(&html_path)?;
+            let shrinked: String = minify(content)?;
+            create_file(&html_path, &shrinked)?;
+        }
+        Ok(())
     }
 }

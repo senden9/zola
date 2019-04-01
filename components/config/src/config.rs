@@ -123,6 +123,9 @@ pub struct Config {
     /// Whether to check all external links for validity
     pub check_external_links: bool,
 
+    /// Whether to minimize the resulting HTML files
+    pub minimize_html: bool,
+
     /// A list of directories to search for additional `.sublime-syntax` files in.
     pub extra_syntaxes: Vec<String>,
     /// The compiled extra syntaxes into a syntax set
@@ -283,6 +286,7 @@ impl Default for Config {
             taxonomies: Vec::new(),
             compile_sass: false,
             check_external_links: false,
+            minimize_html: false,
             build_search_index: false,
             ignored_content: Vec::new(),
             ignored_content_globset: None,

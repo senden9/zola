@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate errors;
 
-extern crate html_minifier;
 extern crate serde;
 #[cfg(test)]
 extern crate tempfile;
